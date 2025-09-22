@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tasks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; background-color: #212121; color: white; text-align: center; padding-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Complete tasks to earn rewards!</h1>
+    
+    <!-- TelegaIn SDK -->
+    <script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
+    <script>
+      const adsController = window.TelegaIn.AdsController.create({
+        token: '32af48b1-5770-4813-a17b-5b5f9b94d6e0'
+      });
+      adsController.showAd({
+        adBlockUuid: "89ac0b41-80be-4503-8557-1334ba0c92cb"
+      });
+    </script>
+</body>
+</html>
