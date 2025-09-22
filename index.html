@@ -96,18 +96,46 @@
         });
 
         // Show loading message
-        alert(`Loading ad ${adNumber}... Please watch the full ad to earn your bonus rewards!`);
+        alert(`Loading ad ${adNumber}... Please watch the full ad to earn your reward!`);
 
         // Show the ad
         ads.ad_show({
           adBlockUuid: "89ac0b41-80be-4503-8557-1334ba0c92cb"
         });
 
-        // Note: In a production implementation, you would:
-        // 1. Verify ad completion with callbacks
-        // 2. Call your server API to award rewards
-        // 3. Update user balance securely
+        // After showing ad, complete the task
+        setTimeout(function() {
+          // Get task ID from URL parameters
+          const urlParams = new URLSearchParams(window.location.search);
+          const taskId = urlParams.get('task');
+
+          if (taskId && window.Telegram && window.Telegram.WebApp) {
+            // Send completion data back to bot
+            const completionData = {
+              action: 'complete_task',
+              task_id: parseInt(taskId),
+              ad_watched: true
+            };
+            window.Telegram.WebApp.sendData(JSON.stringify(completionData));
+            alert('Task completed! You earned your reward.');
+          } else {
+            alert('Ad completed! Thank you for watching.');
+          }
+        }, 3000); // Wait 3 seconds to simulate ad viewing
       }
+
+      // Auto-watch ad if task parameter is present
+      window.addEventListener('load', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskId = urlParams.get('task');
+
+        if (taskId) {
+          // Automatically start watching ad for the specific task
+          setTimeout(function() {
+            watchAd(taskId);
+          }, 1000);
+        }
+      });
     </script>
 </body>
 </html>
