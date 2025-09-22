@@ -4,21 +4,120 @@
     <title>Tasks</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: sans-serif; background-color: #212121; color: white; text-align: center; padding-top: 20px; }
+        body {
+            font-family: sans-serif;
+            background-color: #212121;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .task-item {
+            background-color: #333;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .task-item h3 {
+            margin: 0 0 10px 0;
+            color: #4CAF50;
+        }
+
+        .task-item p {
+            margin: 5px 0;
+            color: #ccc;
+        }
+
+        .reward {
+            color: #FFD700 !important;
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <h1>Complete tasks to earn rewards!</h1>
-    
+
+    <div id="tasks-container">
+        <p>Loading tasks...</p>
+    </div>
+
     <!-- TelegaIn SDK -->
     <script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
     <script>
-      const adsController = window.TelegaIn.AdsController.create({
-        token: '32af48b1-5770-4813-a17b-5b5f9b94d6e0'
-      });
-      adsController.showAd({
-        adBlockUuid: "89ac0b41-80be-4503-8557-1334ba0c92cb"
-      });
+      // Load tasks from API
+      async function loadTasks() {
+        try {
+          const response = await fetch('/api/tasks');
+          const tasks = await response.json();
+
+          const container = document.getElementById('tasks-container');
+
+          if (tasks.length === 0) {
+            container.innerHTML = '<p>No tasks available at the moment.</p>';
+            return;
+          }
+
+          let html = '<div class="tasks-list">';
+          tasks.forEach(task => {
+            html += `
+              <div class="task-item">
+                <h3>${task.title}</h3>
+                <p>${task.description}</p>
+                <p class="reward">Reward: ${task.reward} SAT</p>
+                <button onclick="completeTask(${task.id})">Complete Task</button>
+              </div>
+            `;
+          });
+          html += '</div>';
+
+          container.innerHTML = html;
+        } catch (error) {
+          console.error('Error loading tasks:', error);
+          document.getElementById('tasks-container').innerHTML = '<p>Error loading tasks. Please try again later.</p>';
+        }
+      }
+
+      function completeTask(taskId) {
+        // Show Telega.io ad when completing a task
+        const ads = window.TelegaIn.AdsController.create_miniapp({
+          token: '32af48b1-5770-4813-a17b-5b5f9b94d6e0'
+        });
+        ads.ad_show({
+          adBlockUuid: "89ac0b41-80be-4503-8557-1334ba0c92cb"
+        });
+
+        // In a real implementation, this would call an API to mark the task as completed
+        alert('Task completed! Ad shown successfully.');
+      }
+
+      // Load tasks when page loads
+      window.addEventListener('load', loadTasks);
     </script>
 </body>
 </html>
+
